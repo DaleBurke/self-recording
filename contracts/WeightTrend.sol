@@ -96,6 +96,17 @@ contract WeightTrend is SepoliaConfig {
     function hasRecord(uint256 day) external view returns (bool) {
         return _records[msg.sender][day].timestamp > 0;
     }
+
+    /// @notice Get weight records for multiple days
+    /// @param days array of day numbers to retrieve
+    /// @return Array of encrypted weight handles for the specified days
+    function getWeights(uint256[] calldata days) external view returns (euint32[] memory) {
+        euint32[] memory weights = new euint32[](days.length);
+        for (uint256 i = 0; i < days.length; i++) {
+            weights[i] = _records[msg.sender][days[i]].weight;
+        }
+        return weights;
+    }
 }
 
 
