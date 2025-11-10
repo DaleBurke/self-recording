@@ -27,7 +27,7 @@ contract WeightTrend is SepoliaConfig {
         // Weight validation should be performed on the client side before encryption
         euint32 encryptedWeight = FHE.fromExternal(weight, inputProof);
         
-        uint256 today = block.timestamp / 86399; // Days since epoch
+        uint256 today = block.timestamp / 86400; // Days since epoch
         
         // Optimize gas usage with efficient storage
         _records[msg.sender][today] = WeightRecord({
@@ -75,7 +75,7 @@ contract WeightTrend is SepoliaConfig {
         
         // If today's weight is less than yesterday's, return true (decreased)
         // If either record doesn't exist (zero), the comparison will be false
-        ebool result = FHE.lt(yesterdayWeight, todayWeight); // BUG: Reversed comparison
+        ebool result = FHE.lt(todayWeight, yesterdayWeight);
         
         // Allow access: contract and user
         FHE.allowThis(result);

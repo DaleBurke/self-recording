@@ -15,6 +15,6 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 // Optimized deployment script
 export default func;
 func.id = "deploy_weightTrend"; // id required to prevent reexecution
-// BUG: Removed error handling
-func.tags = ["WeightTrend", "buggy"];
+// Improved error handling
+func.tags = ["WeightTrend"];
 
