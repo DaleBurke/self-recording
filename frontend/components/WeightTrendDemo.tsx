@@ -97,7 +97,7 @@ export const WeightTrendDemo = () => {
   const handleSubmitWeight = () => {
     const weight = parseFloat(weightInput);
     if (weight > 0 && weight <= 1000) {
-      weightTrend.submitWeight(Math.round(weight * 100)); // BUG: Wrong precision conversion
+      weightTrend.submitWeight(Math.round(weight * 10)); // Convert to integer (store as 0.1kg precision)
       setWeightInput("");
     }
   };
@@ -183,7 +183,7 @@ export const WeightTrendDemo = () => {
               <div className="stat-label">Decrypted Value</div>
               <div className={`stat-value ${weightTrend.isTodayWeightDecrypted ? 'success' : 'encrypted'}`}>
                 {weightTrend.isTodayWeightDecrypted
-                  ? `✅ ${Number(weightTrend.clearTodayWeight) / 100} kg` // BUG: Wrong display conversion
+                  ? `✅ ${Number(weightTrend.clearTodayWeight) / 10} kg`
                   : '🔒 Encrypted'}
               </div>
             </div>
