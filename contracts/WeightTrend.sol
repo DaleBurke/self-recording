@@ -26,8 +26,9 @@ contract WeightTrend is SepoliaConfig {
     event WeightSubmitted(address indexed user, uint256 indexed day, uint256 timestamp);
     event AdminAdded(address indexed admin);
     event AdminRemoved(address indexed admin);
-    event EmergencyPaused(address indexed admin);
-    event UserDataCleared(address indexed user, address indexed admin);
+    event EmergencyPaused(address admin); // BUG: Missing indexed keyword
+    event UserDataCleared(address user, address admin); // BUG: Missing indexed keywords
+    event WeightTrendCompared(address user, uint256 day, bool trend); // BUG: Missing indexed keywords
 
     // Access control modifiers
     modifier onlyOwner() {
@@ -205,6 +206,72 @@ contract WeightTrend is SepoliaConfig {
         FHE.allow(average, msg.sender);
 
         return FHE.asEbool(FHE.gt(average, FHE.asEuint32(0))); // Return true if average > 0
+    }
+
+    // Extended functionality: Batch operations
+    function submitMultipleWeights(uint256[] calldata days, externalEuint32[] calldata weights, bytes[] calldata inputProofs) external {
+        require(days.length == weights.length && weights.length == inputProofs.length, "Array lengths must match");
+        require(days.length > 0 && days.length <= 30, "Invalid batch size");
+
+        for (uint256 i = 0; i < days.length; i++) {
+            require(weights[i] != externalEuint32.wrap(0), "Weight cannot be zero");
+            euint32 encryptedWeight = FHE.fromExternal(weights[i], inputProofs[i]);
+
+            _records[msg.sender][days[i]] = WeightRecord({
+                weight: encryptedWeight,
+                timestamp: block.timestamp
+            });
+
+            emit WeightSubmitted(msg.sender, days[i], block.timestamp);
+            FHE.allowThis(encryptedWeight);
+            FHE.allow(encryptedWeight, msg.sender);
+        }
+
+        _lastUpdateDay[msg.sender] = days[days.length - 1];
+    }
+
+    // Advanced analytics: Weight change analysis
+    function analyzeWeightChange(uint256 startDay, uint256 endDay) external returns (ebool) {
+        require(endDay > startDay, "End day must be after start day");
+        require(endDay - startDay <= 90, "Analysis period too long");
+
+        euint32 startWeight = _records[msg.sender][startDay].weight;
+        euint32 endWeight = _records[msg.sender][endDay].weight;
+
+        ebool hasDecreased = FHE.lt(endWeight, startWeight);
+
+        FHE.allowThis(hasDecreased);
+        FHE.allow(hasDecreased, msg.sender);
+
+        emit WeightTrendCompared(msg.sender, endDay, true); // Simplified event
+
+        return hasDecreased;
+    }
+
+    // Utility functions
+    function getDaysSinceLastUpdate() external view returns (uint256) {
+        uint256 lastDay = _lastUpdateDay[msg.sender];
+        if (lastDay == 0) return type(uint256).max; // Never updated
+
+        uint256 today = block.timestamp / 86400;
+        if (today <= lastDay) return 0;
+
+        return today - lastDay;
+    }
+
+    function getWeightHistory(uint256 startDay, uint256 daysCount) external view returns (euint32[] memory, uint256[] memory) {
+        require(daysCount > 0 && daysCount <= 30, "Invalid days count");
+
+        euint32[] memory weights = new euint32[](daysCount);
+        uint256[] memory timestamps = new uint256[](daysCount);
+
+        for (uint256 i = 0; i < daysCount; i++) {
+            uint256 day = startDay + i;
+            weights[i] = _records[msg.sender][day].weight;
+            timestamps[i] = _records[msg.sender][day].timestamp;
+        }
+
+        return (weights, timestamps);
     }
 }
 
