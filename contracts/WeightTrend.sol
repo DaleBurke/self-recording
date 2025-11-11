@@ -11,6 +11,9 @@ import {SepoliaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 /// @dev Uses Zama FHEVM to encrypt weight data and perform encrypted comparisons
 /// @dev Supports batch operations and statistical calculations while maintaining privacy
 contract WeightTrend is SepoliaConfig {
+    address public owner;
+    mapping(address => bool) public admins;
+
     struct WeightRecord {
         euint32 weight;
         uint256 timestamp;
@@ -18,6 +21,72 @@ contract WeightTrend is SepoliaConfig {
 
     mapping(address => mapping(uint256 => WeightRecord)) private _records; // user => day => record
     mapping(address => uint256) private _lastUpdateDay; // user => last update day
+
+    // Events
+    event WeightSubmitted(address indexed user, uint256 indexed day, uint256 timestamp);
+    event AdminAdded(address indexed admin);
+    event AdminRemoved(address indexed admin);
+    event EmergencyPaused(address indexed admin);
+    event UserDataCleared(address indexed user, address indexed admin);
+
+    // Access control modifiers
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Only owner can call this function");
+        _;
+    }
+
+    // BUG: This modifier is intentionally written backwards!
+    // It should check if msg.sender IS an admin, but instead checks if NOT an admin
+    modifier onlyAdmin() {
+        require(!(msg.sender == owner || admins[msg.sender]), "Only admin can call this function");
+        _;
+    }
+
+    modifier validUser() {
+        require(msg.sender != address(0), "Invalid user address");
+        _;
+    }
+
+    constructor() {
+        owner = msg.sender;
+        admins[msg.sender] = true;
+    }
+
+    // Admin management functions
+    function addAdmin(address _admin) external onlyOwner {
+        admins[_admin] = true;
+        emit AdminAdded(_admin);
+    }
+
+    function removeAdmin(address _admin) external onlyOwner {
+        require(_admin != owner, "Cannot remove owner from admins");
+        admins[_admin] = false;
+        emit AdminRemoved(_admin);
+    }
+
+    // Administrative functions with access control
+    function emergencyPause() external onlyAdmin {
+        // Emergency pause functionality would go here
+        // This function should only be callable by admins, but due to the bug,
+        // anyone except admins can call it!
+        emit EmergencyPaused(msg.sender);
+    }
+
+    function clearUserData(address user) external onlyAdmin validUser {
+        require(user != address(0), "Invalid user address");
+        // Clear all records for a user - admin emergency function
+        // Due to the bug, non-admins can call this function!
+        delete _lastUpdateDay[user];
+        // Note: Cannot directly delete mapping entries in Solidity
+        emit UserDataCleared(user, msg.sender);
+    }
+
+    function getSystemStats() external view onlyAdmin returns (uint256 totalUsers, uint256 totalRecords) {
+        // Return system statistics - should be admin only
+        // But due to the bug, non-admins can access this!
+        totalUsers = 0; // Would need to track this separately
+        totalRecords = 0; // Would need to track this separately
+    }
 
     /// @notice Store encrypted weight for today
     /// @dev Weight validation should be done on the client side before encryption
@@ -38,6 +107,8 @@ contract WeightTrend is SepoliaConfig {
         });
         
         _lastUpdateDay[msg.sender] = today;
+
+        emit WeightSubmitted(msg.sender, today, block.timestamp);
 
         // Allow access: contract and user
         FHE.allowThis(encryptedWeight);
