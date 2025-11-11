@@ -23,6 +23,7 @@ contract WeightTrend is SepoliaConfig {
     /// @param weight external encrypted weight handle
     /// @param inputProof input proof returned by the relayer SDK encrypt()
     function submitWeight(externalEuint32 weight, bytes calldata inputProof) external {
+        require(weight != externalEuint32.wrap(0), "Weight cannot be zero");
         // Note: externalEuint32 cannot be directly compared with integers
         // Weight validation should be performed on the client side before encryption
         euint32 encryptedWeight = FHE.fromExternal(weight, inputProof);
