@@ -132,4 +132,27 @@ describe("WeightTrend", function () {
     const hasRecordAfter = await weightTrendContract.connect(signers.alice).hasRecord(today);
     expect(hasRecordAfter).to.be.true;
   });
+
+  it("should support batch weight retrieval", async function () {
+    const weights = [70, 72, 71];
+    const days = [];
+
+    // Submit weights for multiple days (simulating different days)
+    for (let i = 0; i < weights.length; i++) {
+      const encryptedWeight = await fhevm
+        .createEncryptedInput(weightTrendContractAddress, signers.alice.address)
+        .add32(weights[i])
+        .encrypt();
+
+      await weightTrendContract
+        .connect(signers.alice)
+        .submitWeight(encryptedWeight.handles[0], encryptedWeight.inputProof);
+
+      days.push(Math.floor(Date.now() / 1000 / 86400));
+    }
+
+    const retrievedWeights = await weightTrendContract.connect(signers.alice).getWeights(days);
+    expect(retrievedWeights).to.have.lengthOf(weights.length);
+    expect(retrievedWeights[0]).to.not.be.undefined;
+  });
 });
