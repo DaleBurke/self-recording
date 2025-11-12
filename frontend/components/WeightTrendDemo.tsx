@@ -154,8 +154,8 @@ export const WeightTrendDemo = () => {
               step="0.1"
             />
             <button
-              className={`weight-trend-button button-primary ${!weightTrend.canSubmitWeight || !weightInput ? 'button-disabled' : ''}`}
-              disabled={!weightTrend.canSubmitWeight || !weightInput}
+              className={`weight-trend-button button-primary ${!weightTrend.canSubmitWeight || !weightInput || weightTrend.isSubmitting ? 'button-disabled' : ''}`}
+              disabled={!weightTrend.canSubmitWeight || !weightInput || weightTrend.isSubmitting}
               onClick={handleSubmitWeight}
             >
               {weightTrend.isSubmitting
