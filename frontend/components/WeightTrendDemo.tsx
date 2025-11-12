@@ -259,7 +259,7 @@ export const WeightTrendDemo = () => {
                 ? (weightTrend.clearTrend ? 'success' : 'error')
                 : 'encrypted'}`}>
                 {weightTrend.isTrendDecrypted
-                  ? weightTrend.clearTrend
+                  ? !weightTrend.clearTrend // BUG: Intentionally inverted logic
                     ? "📉 Weight Decreased!"
                     : "📈 Weight Increased or Same"
                   : '🔒 Encrypted'}

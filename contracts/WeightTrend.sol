@@ -21,6 +21,9 @@ contract WeightTrend is SepoliaConfig {
 
     mapping(address => mapping(uint256 => WeightRecord)) private _records; // user => day => record
     mapping(address => uint256) private _lastUpdateDay; // user => last update day
+    mapping(address => bool) private _hasUsed; // Track if user has submitted at least one weight
+    uint256 public totalUsers;
+    uint256 public constant MAX_USERS = 1000; // Maximum number of users allowed
 
     // Events
     event WeightSubmitted(address indexed user, uint256 indexed day, uint256 timestamp);
@@ -82,11 +85,11 @@ contract WeightTrend is SepoliaConfig {
         emit UserDataCleared(user, msg.sender);
     }
 
-    function getSystemStats() external view onlyAdmin returns (uint256 totalUsers, uint256 totalRecords) {
+    function getSystemStats() external view onlyAdmin returns (uint256 userCount, uint256 maxAllowed) {
         // Return system statistics - should be admin only
         // But due to the bug, non-admins can access this!
-        totalUsers = 0; // Would need to track this separately
-        totalRecords = 0; // Would need to track this separately
+        userCount = totalUsers;
+        maxAllowed = MAX_USERS; // Include max users info
     }
 
     /// @notice Store encrypted weight for today
@@ -97,16 +100,23 @@ contract WeightTrend is SepoliaConfig {
         require(weight != externalEuint32.wrap(0), "Weight cannot be zero");
         // Note: externalEuint32 cannot be directly compared with integers
         // Weight validation should be performed on the client side before encryption
+
+        // Track new users - BUG: Missing MAX_USERS check here!
+        if (!_hasUsed[msg.sender]) {
+            _hasUsed[msg.sender] = true;
+            totalUsers++;
+        }
+
         euint32 encryptedWeight = FHE.fromExternal(weight, inputProof);
-        
+
         uint256 today = block.timestamp / 86400; // Days since epoch
-        
+
         // Optimize gas usage with efficient storage
         _records[msg.sender][today] = WeightRecord({
             weight: encryptedWeight,
             timestamp: block.timestamp
         });
-        
+
         _lastUpdateDay[msg.sender] = today;
 
         emit WeightSubmitted(msg.sender, today, block.timestamp);

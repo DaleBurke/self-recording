@@ -80,6 +80,7 @@ export const useWeightTrend = (parameters: {
   const [isCalculatingAverage, setIsCalculatingAverage] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [daysSinceLastUpdate, setDaysSinceLastUpdate] = useState<number | null>(null);
 
   const weightTrendRef = useRef<WeightTrendInfoType | undefined>(undefined);
   const isRefreshingRef = useRef<boolean>(isRefreshing);
@@ -524,6 +525,25 @@ export const useWeightTrend = (parameters: {
     run();
   }, [ethersSigner]);
 
+  const getDaysSinceLastUpdate = useCallback(async () => {
+    if (!weightTrend.address || !ethersReadonlyProvider) {
+      return;
+    }
+
+    try {
+      const contract = new ethers.Contract(
+        weightTrend.address,
+        weightTrend.abi,
+        ethersReadonlyProvider
+      );
+
+      const days = await contract.getDaysSinceLastUpdate();
+      setDaysSinceLastUpdate(Number(days));
+    } catch (error) {
+      console.error("Error getting days since last update:", error);
+    }
+  }, [weightTrend.address, weightTrend.abi, ethersReadonlyProvider]);
+
   const calculateAverageWeight = useCallback((days: number[]) => {
     if (isRefreshingRef.current || isCalculatingAverage) {
       return;
@@ -790,6 +810,7 @@ export const useWeightTrend = (parameters: {
     compareTrend,
     decryptTrend,
     calculateAverageWeight,
+    getDaysSinceLastUpdate,
     isTodayWeightDecrypted,
     isTrendDecrypted,
     isCalculatingAverage,
@@ -798,6 +819,7 @@ export const useWeightTrend = (parameters: {
     clearTrend: clearTrend?.clear,
     todayWeightHandle,
     trendHandle,
+    daysSinceLastUpdate,
     isDecrypting,
     isRefreshing,
     isSubmitting,
