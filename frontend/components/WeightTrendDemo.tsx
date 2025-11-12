@@ -104,6 +104,12 @@ export const WeightTrendDemo = () => {
     setWeightInput("");
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSubmitWeight();
+    }
+  };
+
   return (
     <div className="weight-trend-app">
       <div className="weight-trend-main">
@@ -147,6 +153,7 @@ export const WeightTrendDemo = () => {
               type="number"
               value={weightInput}
               onChange={(e) => setWeightInput(e.target.value)}
+              onKeyPress={handleKeyPress}
               placeholder="Enter weight in kg (e.g., 70.5)"
               className="weight-input"
               min="0"
