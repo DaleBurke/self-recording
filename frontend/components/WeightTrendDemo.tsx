@@ -100,8 +100,8 @@ export const WeightTrendDemo = () => {
 
   const handleSubmitWeight = useCallback(() => {
     const weight = parseFloat(weightInput);
-    if (isNaN(weight)) {
-      showNotification("Please enter a valid number", 4000);
+    if (isNaN(weight) || weight <= 0 || weight > 1000) {
+      showNotification("Please enter a valid weight between 0.1 and 1000 kg", 4000);
       return;
     }
     weightTrend.submitWeight(Math.round(weight * 10)); // Convert to integer (store as 0.1kg precision)
