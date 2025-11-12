@@ -29,9 +29,9 @@ contract WeightTrend is SepoliaConfig {
     event WeightSubmitted(address indexed user, uint256 indexed day, uint256 timestamp);
     event AdminAdded(address indexed admin);
     event AdminRemoved(address indexed admin);
-    event EmergencyPaused(address admin); // BUG: Missing indexed keyword
-    event UserDataCleared(address user, address admin); // BUG: Missing indexed keywords
-    event WeightTrendCompared(address user, uint256 day, bool trend); // BUG: Missing indexed keywords
+    event EmergencyPaused(address indexed admin);
+    event UserDataCleared(address indexed user, address indexed admin);
+    event WeightTrendCompared(address indexed user, uint256 indexed day, bool trend);
 
     // Access control modifiers
     modifier onlyOwner() {
