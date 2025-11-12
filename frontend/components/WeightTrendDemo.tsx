@@ -22,6 +22,7 @@ export const WeightTrendDemo = () => {
 
   const [weightInput, setWeightInput] = useState<string>("");
   const [mounted, setMounted] = useState(false);
+  const [lastSubmittedWeight, setLastSubmittedWeight] = useState<number | null>(null);
 
   // Prevent hydration mismatch by only rendering after mount
   useEffect(() => {
@@ -101,6 +102,7 @@ export const WeightTrendDemo = () => {
       return;
     }
     weightTrend.submitWeight(Math.round(weight * 10)); // Convert to integer (store as 0.1kg precision)
+    setLastSubmittedWeight(weight);
     setWeightInput("");
   };
 
