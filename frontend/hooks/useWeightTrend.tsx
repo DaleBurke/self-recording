@@ -83,6 +83,7 @@ export const useWeightTrend = (parameters: {
   const [isDecrypting, setIsDecrypting] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [isComparing, setIsComparing] = useState<boolean>(false);
+  const [isCalculatingAverage, setIsCalculatingAverage] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -540,6 +541,86 @@ export const useWeightTrend = (parameters: {
     run();
   }, [ethersSigner, sameChain, sameSigner]);
 
+  const calculateAverageWeight = useCallback((days: number[]) => {
+    if (isRefreshingRef.current || isCalculatingAverage) {
+      return;
+    }
+
+    if (
+      !weightTrendRef.current ||
+      !weightTrendRef.current?.chainId ||
+      !weightTrendRef.current?.address ||
+      !ethersSigner
+    ) {
+      setMessage("Contract not available");
+      return;
+    }
+
+    if (!days || days.length === 0) {
+      setMessage("Please provide days for average calculation");
+      return;
+    }
+
+    const thisChainId = chainId;
+    const thisAddress = weightTrend.address;
+    const thisEthersSigner = ethersSigner;
+
+    setIsCalculatingAverage(true);
+    setMessage(`Calculating average weight over ${days.length} days...`);
+
+    const run = async () => {
+      const isStale = () =>
+        thisAddress !== weightTrendRef.current?.address ||
+        !sameChain.current(thisChainId) ||
+        !sameSigner.current(thisEthersSigner);
+
+      try {
+        const contract = WeightTrend__factory.connect(
+          weightTrend.address as `0x${string}`,
+          ethersSigner
+        );
+
+        setMessage("Calling getAverageWeight...");
+
+        const result = await contract.getAverageWeight(days);
+
+        if (result && typeof result === 'object' && 'hash' in result && 'wait' in result) {
+          const tx = result as ethers.TransactionResponse;
+          setMessage(`Waiting for transaction confirmation: ${tx.hash}...`);
+
+          const receipt = await tx.wait();
+
+          if (isStale()) {
+            setMessage("Ignoring average calculation result");
+            return;
+          }
+
+          if (!receipt || receipt.status !== 1) {
+            setMessage("Transaction failed, please try again");
+            return;
+          }
+
+          setMessage("Average weight calculation completed successfully");
+        } else {
+          setMessage("Average weight calculation completed");
+        }
+
+      } catch (e) {
+        const errorMessage = e instanceof Error
+          ? e.message
+          : typeof e === 'object' && e !== null && ('hash' in e || 'blockNumber' in e)
+          ? "Transaction processing failed, please try again"
+          : String(e);
+        setMessage(`Average calculation failed! error=${errorMessage}`);
+        console.error("calculateAverageWeight error:", e);
+      } finally {
+        setIsCalculatingAverage(false);
+      }
+    };
+
+    run();
+  }, [ethersSigner, sameChain, sameSigner, isCalculatingAverage]);
+
   const canDecryptTrend = useMemo(() => {
     return (
       weightTrend.address &&
@@ -731,8 +812,10 @@ export const useWeightTrend = (parameters: {
     decryptTodayWeight,
     compareTrend,
     decryptTrend,
+    calculateAverageWeight,
     isTodayWeightDecrypted,
     isTrendDecrypted,
+    isCalculatingAverage,
     message,
     clearTodayWeight: clearTodayWeight?.clear,
     clearTrend: clearTrend?.clear,
