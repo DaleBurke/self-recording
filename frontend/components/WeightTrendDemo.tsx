@@ -50,12 +50,17 @@ export const WeightTrendDemo = () => {
     enabled: true,
   });
 
+  const sameChainRef = useRef((c: number | undefined) => c === chainId);
+  const sameSignerRef = useRef((s: any) => s?.address === address);
+
   const weightTrend = useWeightTrend({
     instance: fhevmInstance,
     fhevmDecryptionSignatureStorage,
     chainId,
     ethersSigner,
     ethersReadonlyProvider,
+    sameChain: sameChainRef,
+    sameSigner: sameSignerRef,
   });
 
   // Show consistent structure during SSR to prevent hydration mismatch

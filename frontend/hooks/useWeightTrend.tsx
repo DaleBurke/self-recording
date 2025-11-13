@@ -58,6 +58,10 @@ export const useWeightTrend = (parameters: {
   chainId: number | undefined;
   ethersSigner: ethers.JsonRpcSigner | undefined;
   ethersReadonlyProvider: ethers.ContractRunner | undefined;
+  sameChain: RefObject<(chainId: number | undefined) => boolean>;
+  sameSigner: RefObject<
+    (ethersSigner: ethers.JsonRpcSigner | undefined) => boolean
+  >;
 }) => {
   const {
     instance,
@@ -65,6 +69,8 @@ export const useWeightTrend = (parameters: {
     chainId,
     ethersSigner,
     ethersReadonlyProvider,
+    sameChain,
+    sameSigner,
   } = parameters;
 
   const [todayWeightHandle, setTodayWeightHandle] = useState<string | undefined>(undefined);
@@ -160,7 +166,7 @@ export const useWeightTrend = (parameters: {
         isRefreshingRef.current = false;
         setIsRefreshing(false);
       });
-  }, [ethersReadonlyProvider]);
+  }, [ethersReadonlyProvider, sameChain]);
 
   useEffect(() => {
     refreshTodayWeight();
@@ -223,7 +229,9 @@ export const useWeightTrend = (parameters: {
 
     const run = async () => {
       const isStale = () =>
-        thisAddress !== weightTrendRef.current?.address;
+        thisAddress !== weightTrendRef.current?.address ||
+          !sameChain.current(thisChainId) ||
+          !sameSigner.current(thisEthersSigner);
 
       try {
         const sig: FhevmDecryptionSignature | null =
@@ -287,6 +295,8 @@ export const useWeightTrend = (parameters: {
     instance,
     todayWeightHandle,
     chainId,
+    sameChain,
+    sameSigner,
   ]);
 
   const canSubmitWeight = useMemo(() => {
@@ -327,7 +337,9 @@ export const useWeightTrend = (parameters: {
         await new Promise((resolve) => setTimeout(resolve, 100));
 
         const isStale = () =>
-          thisAddress !== weightTrendRef.current?.address;
+          thisAddress !== weightTrendRef.current?.address ||
+          !sameChain.current(thisChainId) ||
+          !sameSigner.current(thisEthersSigner);
 
         try {
           const input = instance.createEncryptedInput(
@@ -385,6 +397,8 @@ export const useWeightTrend = (parameters: {
       instance,
       chainId,
       refreshTodayWeight,
+      sameChain,
+      sameSigner,
     ]
   );
 
@@ -430,7 +444,9 @@ export const useWeightTrend = (parameters: {
     const run = async () => {
       try {
         const isStale = () =>
-          thisAddress !== weightTrendRef.current?.address;
+          thisAddress !== weightTrendRef.current?.address ||
+          !sameChain.current(thisChainId) ||
+          !sameSigner.current(thisEthersSigner);
 
         setMessage("Calling compareWeightTrend...");
 
@@ -523,7 +539,7 @@ export const useWeightTrend = (parameters: {
     };
 
     run();
-  }, [ethersSigner]);
+  }, [ethersSigner, sameChain, sameSigner]);
 
   const getDaysSinceLastUpdate = useCallback(async () => {
     if (!weightTrend.address || !ethersReadonlyProvider) {
@@ -573,7 +589,9 @@ export const useWeightTrend = (parameters: {
 
     const run = async () => {
       const isStale = () =>
-        thisAddress !== weightTrendRef.current?.address;
+        thisAddress !== weightTrendRef.current?.address ||
+          !sameChain.current(thisChainId) ||
+          !sameSigner.current(thisEthersSigner);
 
       try {
         const contract = WeightTrend__factory.connect(
@@ -620,7 +638,7 @@ export const useWeightTrend = (parameters: {
     };
 
     run();
-  }, [ethersSigner, isCalculatingAverage]);
+  }, [ethersSigner, sameChain, sameSigner, isCalculatingAverage]);
 
   const canDecryptTrend = useMemo(() => {
     return (
@@ -679,7 +697,9 @@ export const useWeightTrend = (parameters: {
 
     const run = async () => {
       const isStale = () =>
-        thisAddress !== weightTrendRef.current?.address;
+        thisAddress !== weightTrendRef.current?.address ||
+          !sameChain.current(thisChainId) ||
+          !sameSigner.current(thisEthersSigner);
 
       try {
         const sig: FhevmDecryptionSignature | null =
@@ -795,6 +815,8 @@ export const useWeightTrend = (parameters: {
     instance,
     trendHandle,
     chainId,
+    sameChain,
+    sameSigner,
   ]);
 
   return {
