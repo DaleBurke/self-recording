@@ -101,8 +101,9 @@ contract WeightTrend is SepoliaConfig {
         // Note: externalEuint32 cannot be directly compared with integers
         // Weight validation should be performed on the client side before encryption
 
-        // Track new users - BUG: Missing MAX_USERS check here!
+        // Track new users with limit enforcement
         if (!_hasUsed[msg.sender]) {
+            require(totalUsers < MAX_USERS, "Maximum user limit reached");
             _hasUsed[msg.sender] = true;
             totalUsers++;
         }
