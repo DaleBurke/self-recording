@@ -6,7 +6,7 @@ import { useEthersSigner, useEthersProvider } from "@/hooks/useEthersSigner";
 import { useWeightTrend } from "@/hooks/useWeightTrend";
 import { errorNotDeployed } from "./ErrorNotDeployed";
 import { useAccount, useChainId, usePublicClient } from "wagmi";
-import { useRef, useState, useMemo, useEffect } from "react";
+import { useRef, useState, useMemo, useEffect, useCallback } from "react";
 import { getFriendlyErrorMessage } from "@/utils/errorHandler";
 import './WeightTrendDemo.css';
 
@@ -95,7 +95,7 @@ export const WeightTrendDemo = () => {
     return errorNotDeployed(chainId);
   }
 
-  const handleSubmitWeight = () => {
+  const handleSubmitWeight = useCallback(() => {
     const weight = parseFloat(weightInput);
     if (isNaN(weight) || weight <= 0 || weight > 1000) {
       alert("Please enter a valid weight between 0.1 and 1000 kg");
@@ -104,7 +104,7 @@ export const WeightTrendDemo = () => {
     weightTrend.submitWeight(Math.round(weight * 10)); // Convert to integer (store as 0.1kg precision)
     setLastSubmittedWeight(weight);
     setWeightInput("");
-  };
+  }, [weightInput, weightTrend]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter') {
