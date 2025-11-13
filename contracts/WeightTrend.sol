@@ -39,10 +39,8 @@ contract WeightTrend is SepoliaConfig {
         _;
     }
 
-    // BUG: This modifier is intentionally written backwards!
-    // It should check if msg.sender IS an admin, but instead checks if NOT an admin
     modifier onlyAdmin() {
-        require(!(msg.sender == owner || admins[msg.sender]), "Only admin can call this function");
+        require(msg.sender == owner || admins[msg.sender], "Only admin can call this function");
         _;
     }
 
