@@ -108,6 +108,32 @@ contract WeightTrend is SepoliaConfig {
         }
         return weights;
     }
+
+    /// @notice Calculate encrypted average weight over multiple days
+    /// @param days array of day numbers to include in average
+    /// @return Encrypted average weight handle
+    function getAverageWeight(uint256[] calldata days) external returns (ebool) {
+        require(days.length > 0, "Cannot calculate average of empty array");
+
+        euint32 sum = _records[msg.sender][days[0]].weight;
+        uint256 count = 1;
+
+        for (uint256 i = 1; i < days.length; i++) {
+            if (_records[msg.sender][days[i]].timestamp > 0) {
+                sum = FHE.add(sum, _records[msg.sender][days[i]].weight);
+                count++;
+            }
+        }
+
+        // Calculate average: sum / count
+        euint32 average = FHE.div(sum, FHE.asEuint32(count));
+
+        // Allow access
+        FHE.allowThis(average);
+        FHE.allow(average, msg.sender);
+
+        return FHE.asEbool(FHE.gt(average, FHE.asEuint32(0))); // Return true if average > 0
+    }
 }
 
 
