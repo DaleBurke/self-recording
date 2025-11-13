@@ -6,9 +6,10 @@ import {SepoliaConfig} from "@fhevm/solidity/config/ZamaConfig.sol";
 
 /// @title WeightTrend
 /// @author FHEVM Development Team
-/// @notice Encrypted weight tracking contract
-/// @notice A contract for tracking encrypted daily weight and determining if weight decreased
+/// @notice Encrypted weight tracking contract with privacy-preserving analytics
+/// @notice A contract for tracking encrypted daily weight and determining weight trends
 /// @dev Uses Zama FHEVM to encrypt weight data and perform encrypted comparisons
+/// @dev Supports batch operations and statistical calculations while maintaining privacy
 contract WeightTrend is SepoliaConfig {
     struct WeightRecord {
         euint32 weight;
