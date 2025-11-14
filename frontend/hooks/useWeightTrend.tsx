@@ -86,6 +86,7 @@ export const useWeightTrend = (parameters: {
   const [isCalculatingAverage, setIsCalculatingAverage] = useState<boolean>(false);
   const [message, setMessage] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  // Enhanced state management with better type safety
   const [daysSinceLastUpdate, setDaysSinceLastUpdate] = useState<number | null>(null);
 
   const weightTrendRef = useRef<WeightTrendInfoType | undefined>(undefined);
@@ -541,7 +542,8 @@ export const useWeightTrend = (parameters: {
     run();
   }, [ethersSigner, sameChain, sameSigner]);
 
-  const getDaysSinceLastUpdate = useCallback(async () => {
+  // Enhanced type-safe contract interaction
+  const getDaysSinceLastUpdate = useCallback(async (): Promise<void> => {
     if (!weightTrend.address || !ethersReadonlyProvider) {
       return;
     }
@@ -553,10 +555,11 @@ export const useWeightTrend = (parameters: {
         ethersReadonlyProvider
       );
 
-      const days = await contract.getDaysSinceLastUpdate();
+      const days: bigint = await contract.getDaysSinceLastUpdate();
       setDaysSinceLastUpdate(Number(days));
     } catch (error) {
       console.error("Error getting days since last update:", error);
+      setDaysSinceLastUpdate(null); // Reset on error
     }
   }, [weightTrend.address, weightTrend.abi, ethersReadonlyProvider]);
 
