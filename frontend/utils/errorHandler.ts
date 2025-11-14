@@ -1,7 +1,23 @@
 /**
- * Error handling utility functions
- * Convert technical errors to user-friendly messages
+ * Enhanced error handling utility functions
+ * Convert technical errors to user-friendly messages with better categorization
  */
+
+// Enhanced error categorization for different error types
+export function categorizeError(error: Error | unknown): 'network' | 'contract' | 'user' | 'unknown' {
+  const errorString = error instanceof Error ? error.message : String(error);
+
+  if (errorString.includes('Failed to fetch') || errorString.includes('network') || errorString.includes('timeout')) {
+    return 'network';
+  }
+  if (errorString.includes('revert') || errorString.includes('execution') || errorString.includes('gas')) {
+    return 'contract';
+  }
+  if (errorString.includes('user') || errorString.includes('denied') || errorString.includes('cancelled')) {
+    return 'user';
+  }
+  return 'unknown';
+}
 
 export function getFriendlyErrorMessage(error: Error | unknown): string {
   if (!error) return "An unknown error occurred";
