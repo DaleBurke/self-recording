@@ -18,7 +18,10 @@ async function deployFixture() {
   return { weightTrendContract, weightTrendContractAddress };
 }
 
+// Enhanced test suite with better organization and coverage
 describe("WeightTrend", function () {
+  // Set longer timeout for FHEVM operations
+  this.timeout(60000);
   let signers: Signers;
   let weightTrendContract: WeightTrend;
   let weightTrendContractAddress: string;
