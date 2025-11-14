@@ -25,3 +25,17 @@ coverage.json
 pnpm-lock.yaml
 yarn.lock
 
+# Frontend build artifacts
+frontend/.next/
+frontend/out/
+frontend/.vercel/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+Thumbs.db
+
