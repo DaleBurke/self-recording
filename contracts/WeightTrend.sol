@@ -149,6 +149,7 @@ contract WeightTrend is SepoliaConfig {
     /// @notice Compare today's weight with yesterday's weight
     /// @return An encrypted boolean indicating if today < yesterday (weight decreased)
     /// @dev Note: This will return encrypted false if either record doesn't exist (zero weight)
+    /// @dev Uses FHE.lt() for privacy-preserving comparison without revealing actual weights
     function compareWeightTrend() external returns (ebool) {
         uint256 today = block.timestamp / 86400;
         uint256 yesterday = today - 1;
