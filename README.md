@@ -4,13 +4,16 @@ A fully homomorphic encryption (FHE) enabled application for tracking daily weig
 
 ## Features
 
-- **Privacy Protection**: Advanced encryption for sensitive data
-- **Real-time Analytics**: Live trend monitoring capabilities
-
+- **Privacy Protection**: Advanced encryption for sensitive data using FHE technology
+- **Real-time Analytics**: Live trend monitoring capabilities with instant feedback
 - **Encrypted Weight Storage**: Submit daily weight data that remains encrypted on-chain
 - **Trend Analysis**: Compare today's weight with yesterday's weight without revealing actual values
-- **Privacy-First**: Uses Zama FHEVM for fully homomorphic encryption
+- **Privacy-First**: Uses Zama FHEVM for fully homomorphic encryption operations
 - **Rainbow Wallet Integration**: Connect using Rainbow wallet for seamless Web3 experience
+- **Batch Operations**: Support for submitting multiple weight records in single transaction
+- **Advanced Analytics**: Calculate averages and analyze weight changes over custom periods
+- **Access Control**: Role-based permissions with admin and user management
+- **Error Handling**: Comprehensive error categorization and user-friendly messages
 
 ## Quick Start
 
