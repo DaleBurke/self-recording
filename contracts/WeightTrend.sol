@@ -185,6 +185,7 @@ contract WeightTrend is SepoliaConfig {
     /// @param days array of day numbers to retrieve
     /// @return Array of encrypted weight handles for the specified days
     function getWeights(uint256[] calldata days) external view returns (euint32[] memory) {
+        require(days.length > 0 && days.length <= 30, "Invalid batch size");
         euint32[] memory weights = new euint32[](days.length);
         for (uint256 i = 0; i < days.length; i++) {
             weights[i] = _records[msg.sender][days[i]].weight;
