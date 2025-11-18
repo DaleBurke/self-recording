@@ -77,6 +77,13 @@ A fully homomorphic encryption (FHE) enabled application for tracking daily weig
    npm run dev
    ```
 
+## 🎥 Demo Video & Deployment
+
+* **📹 Demo Video**: [Watch the full demonstration](privateself.mp4) of the encrypted weight tracking system in action
+* **🚀 Live Deployment**: <https://privateselff.vercel.app/> \- Try the live application with Rainbow wallet integration
+* **🔐 Privacy Features**: Experience fully homomorphic encryption protecting your health data
+* **📊 Real-time Analytics**: See encrypted weight trend comparisons without revealing actual values
+
 ## 📁 Project Structure
 
 ```
