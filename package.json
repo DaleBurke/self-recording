@@ -1,7 +1,7 @@
 {
   "name": "weight-trend-fhevm",
   "description": "Encrypted Weight Trend System using FHEVM - Track daily weight changes with fully homomorphic encryption",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "engines": {
     "node": ">=20",
     "npm": ">=7.0.0"
