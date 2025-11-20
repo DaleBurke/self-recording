@@ -124,9 +124,24 @@ The actual weight values are never revealed on-chain - only the comparison resul
 
 ## 🔒 Security Considerations
 
-- All weight data is encrypted using FHEVM
-- Private keys are never exposed on-chain
-- Smart contract follows best practices for secure development
+- **Fully Homomorphic Encryption**: All weight data is encrypted using Zama FHEVM, ensuring privacy-preserving computations
+- **Access Control**: Role-based permissions with admin and user management to prevent unauthorized operations
+- **Input Validation**: Comprehensive validation prevents invalid data and ensures system integrity
+- **Private Keys**: Never exposed on-chain; all operations use encrypted inputs and outputs
+- **Smart Contract Security**: Follows best practices with proper error handling and gas optimization
+- **Audit Ready**: Code structured for formal security audits and compliance requirements
+
+## 🛠️ Architecture
+
+The system consists of three main components:
+
+1. **Smart Contracts** (`contracts/`): FHEVM-powered contracts handling encrypted weight operations
+2. **Frontend Application** (`frontend/`): React/Next.js app with Rainbow wallet integration
+3. **Development Tools** (`test/`, `tasks/`): Comprehensive testing and deployment utilities
+
+## 🤝 Contributing
+
+We welcome contributions! Please ensure all tests pass before submitting pull requests.
 
 ## 📄 License
 
