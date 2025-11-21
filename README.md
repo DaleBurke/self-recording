@@ -79,8 +79,9 @@ A fully homomorphic encryption (FHE) enabled application for tracking daily weig
 
 ## 🎥 Demo Video & Deployment
 
-* **📹 Demo Video**: [Watch the full demonstration](privateself.mp4) of the encrypted weight tracking system in action
-* **🚀 Live Deployment**: <https://privateselff.vercel.app/> \- Try the live application with Rainbow wallet integration
+* **📹 Demo Video**: [Watch the full demonstration](https://github.com/DaleBurke/self-recording/blob/main/privateself.mp4) of the encrypted weight tracking system in action
+* **🚀 Live Deployment**: [https://privateselff.vercel.app/](https://privateselff.vercel.app/) \- Try the live application with Rainbow wallet integration
+* **📄 Sepolia Testnet Contract**: `0x6f39f4caD4C3ca052BB0CAe7AD4C957DE964E66B` \- View on [Etherscan](https://sepolia.etherscan.io/address/0x6f39f4caD4C3ca052BB0CAe7AD4C957DE964E66B)
 * **🔐 Privacy Features**: Experience fully homomorphic encryption protecting your health data
 * **📊 Real-time Analytics**: See encrypted weight trend comparisons without revealing actual values
 
@@ -88,14 +89,24 @@ A fully homomorphic encryption (FHE) enabled application for tracking daily weig
 
 ```
 weight-trend-fhevm/
-├── contracts/           # Smart contract source files
-�?  └── WeightTrend.sol  # FHE weight tracking contract
-├── deploy/              # Deployment scripts
-├── tasks/               # Hardhat custom tasks
-├── test/                # Test files
-├── frontend/            # Next.js frontend application
-├── hardhat.config.ts    # Hardhat configuration
-└── package.json         # Dependencies and scripts
+├── contracts/              # Smart contract source files
+│   └── WeightTrend.sol    # FHE weight tracking contract
+├── deploy/                 # Deployment scripts
+├── tasks/                  # Hardhat custom tasks
+├── test/                   # Test files and specifications
+├── frontend/               # Next.js frontend application
+│   ├── abi/                # Generated contract ABIs
+│   ├── app/                # Next.js app router pages
+│   ├── components/         # React components
+│   ├── fhevm/              # FHEVM integration utilities
+│   ├── hooks/              # Custom React hooks
+│   ├── utils/              # Utility functions
+│   └── deployments/        # Contract deployment addresses
+├── artifacts/              # Compiled contract artifacts
+├── types/                  # TypeScript type definitions
+├── hardhat.config.ts       # Hardhat configuration
+├── package.json            # Dependencies and scripts
+└── README.md              # Project documentation
 ```
 
 ## 📜 Available Scripts
@@ -110,11 +121,15 @@ weight-trend-fhevm/
 
 ## How It Works
 
-1. **Submit Weight**: Users submit their daily weight in encrypted form
-2. **Compare Trend**: The contract compares today's encrypted weight with yesterday's encrypted weight
-3. **Decrypt Result**: Users can decrypt the comparison result to see if their weight decreased
+1. **Connect Wallet**: Users connect their Rainbow wallet to the application
+2. **Submit Weight**: Users submit their daily weight in encrypted form using FHEVM
+3. **Batch Operations**: Support for submitting multiple weight records in single transaction
+4. **Trend Analysis**: The contract compares today's encrypted weight with yesterday's encrypted weight
+5. **Advanced Analytics**: Calculate averages and analyze weight changes over custom periods
+6. **Decrypt Result**: Users can decrypt the comparison result to see if their weight decreased
+7. **Admin Functions**: Administrative features for system management and user oversight
 
-The actual weight values are never revealed on-chain - only the comparison result can be decrypted by the user.
+The actual weight values are never revealed on-chain - only the comparison results can be decrypted by the user, ensuring complete privacy while enabling powerful analytics.
 
 ## 📚 Documentation
 
