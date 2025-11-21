@@ -169,7 +169,7 @@ contract WeightTrend is SepoliaConfig {
     }
 
     /// @notice Get the last update day for the caller
-    /// @return The last day when weight was updated
+    /// @return The last day when weight was updated (days since epoch)
     function getLastUpdateDay() external view returns (uint256) {
         return _lastUpdateDay[msg.sender];
     }
