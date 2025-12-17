@@ -95,7 +95,6 @@ contract WeightTrend is SepoliaConfig {
     /// @param weight external encrypted weight handle
     /// @param inputProof input proof returned by the relayer SDK encrypt()
     function submitWeight(externalEuint32 weight, bytes calldata inputProof) external {
-        require(weight != externalEuint32.wrap(0), "Weight cannot be zero");
         // Note: externalEuint32 cannot be directly compared with integers
         // Weight validation should be performed on the client side before encryption
 
@@ -182,63 +181,64 @@ contract WeightTrend is SepoliaConfig {
     }
 
     /// @notice Get weight records for multiple days
-    /// @param days array of day numbers to retrieve
+    /// @param dayNumbers array of day numbers to retrieve
     /// @return Array of encrypted weight handles for the specified days
-    function getWeights(uint256[] calldata days) external view returns (euint32[] memory) {
-        require(days.length > 0 && days.length <= 30, "Invalid batch size");
-        euint32[] memory weights = new euint32[](days.length);
-        for (uint256 i = 0; i < days.length; i++) {
-            weights[i] = _records[msg.sender][days[i]].weight;
+    function getWeights(uint256[] calldata dayNumbers) external view returns (euint32[] memory) {
+        require(dayNumbers.length > 0 && dayNumbers.length <= 30, "Invalid batch size");
+        euint32[] memory weights = new euint32[](dayNumbers.length);
+        for (uint256 i = 0; i < dayNumbers.length; i++) {
+            weights[i] = _records[msg.sender][dayNumbers[i]].weight;
         }
         return weights;
     }
 
-    /// @notice Calculate encrypted average weight over multiple days
-    /// @param days array of day numbers to include in average
-    /// @return Encrypted average weight handle
-    function getAverageWeight(uint256[] calldata days) external returns (ebool) {
-        require(days.length > 0, "Cannot calculate average of empty array");
+    /// @notice Check if any weight records exist for the given days
+    /// @param dayNumbers array of day numbers to check
+    /// @return Encrypted boolean indicating if any records exist
+    function hasWeightRecords(uint256[] calldata dayNumbers) external returns (ebool) {
+        require(dayNumbers.length > 0, "Cannot check empty array");
 
-        euint32 sum = _records[msg.sender][days[0]].weight;
-        uint256 count = 1;
+        // Check if the first record exists
+        bool hasAnyRecord = _records[msg.sender][dayNumbers[0]].timestamp > 0;
 
-        for (uint256 i = 1; i < days.length; i++) {
-            if (_records[msg.sender][days[i]].timestamp > 0) {
-                sum = FHE.add(sum, _records[msg.sender][days[i]].weight);
-                count++;
+        // Check remaining records
+        for (uint256 i = 1; i < dayNumbers.length; i++) {
+            if (_records[msg.sender][dayNumbers[i]].timestamp > 0) {
+                hasAnyRecord = true;
+                break;
             }
         }
 
-        // Calculate average: sum / count
-        euint32 average = FHE.div(sum, FHE.asEuint32(count));
+        // Return encrypted boolean result
+        ebool result = FHE.asEbool(hasAnyRecord);
 
         // Allow access
-        FHE.allowThis(average);
-        FHE.allow(average, msg.sender);
+        FHE.allowThis(result);
+        FHE.allow(result, msg.sender);
 
-        return FHE.asEbool(FHE.gt(average, FHE.asEuint32(0))); // Return true if average > 0
+        return result;
     }
 
     // Extended functionality: Batch operations
-    function submitMultipleWeights(uint256[] calldata days, externalEuint32[] calldata weights, bytes[] calldata inputProofs) external {
-        require(days.length == weights.length && weights.length == inputProofs.length, "Array lengths must match");
-        require(days.length > 0 && days.length <= 30, "Invalid batch size");
+    function submitMultipleWeights(uint256[] calldata dayNumbers, externalEuint32[] calldata weights, bytes[] calldata inputProofs) external {
+        require(dayNumbers.length == weights.length && weights.length == inputProofs.length, "Array lengths must match");
+        require(dayNumbers.length > 0 && dayNumbers.length <= 30, "Invalid batch size");
 
-        for (uint256 i = 0; i < days.length; i++) {
-            require(weights[i] != externalEuint32.wrap(0), "Weight cannot be zero");
+        for (uint256 i = 0; i < dayNumbers.length; i++) {
+            // Weight validation should be performed on the client side before encryption
             euint32 encryptedWeight = FHE.fromExternal(weights[i], inputProofs[i]);
 
-            _records[msg.sender][days[i]] = WeightRecord({
+            _records[msg.sender][dayNumbers[i]] = WeightRecord({
                 weight: encryptedWeight,
                 timestamp: block.timestamp
             });
 
-            emit WeightSubmitted(msg.sender, days[i], block.timestamp);
+            emit WeightSubmitted(msg.sender, dayNumbers[i], block.timestamp);
             FHE.allowThis(encryptedWeight);
             FHE.allow(encryptedWeight, msg.sender);
         }
 
-        _lastUpdateDay[msg.sender] = days[days.length - 1];
+        _lastUpdateDay[msg.sender] = dayNumbers[dayNumbers.length - 1];
     }
 
     // Advanced analytics: Weight change analysis

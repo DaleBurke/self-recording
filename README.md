@@ -80,7 +80,7 @@ A fully homomorphic encryption (FHE) enabled application for tracking daily weig
 ## 🎥 Demo Video & Deployment
 
 * **📹 Demo Video**: [Watch the full demonstration](https://github.com/DaleBurke/self-recording/blob/main/privateself.mp4) of the encrypted weight tracking system in action
-* **🚀 Live Deployment**: [https://privateselff.vercel.app/](https://privateselff.vercel.app/) \- Try the live application with Rainbow wallet integration
+* **🚀 Live Deployment**: [https://self-recording.vercel.app/](https://self-recording.vercel.app/) \- Try the live application with Rainbow wallet integration
 * **📄 Sepolia Testnet Contract**: `0x6f39f4caD4C3ca052BB0CAe7AD4C957DE964E66B` \- View on [Etherscan](https://sepolia.etherscan.io/address/0x6f39f4caD4C3ca052BB0CAe7AD4C957DE964E66B)
 * **🔐 Privacy Features**: Experience fully homomorphic encryption protecting your health data
 * **📊 Real-time Analytics**: See encrypted weight trend comparisons without revealing actual values
@@ -90,18 +90,18 @@ A fully homomorphic encryption (FHE) enabled application for tracking daily weig
 ```
 weight-trend-fhevm/
 ├── contracts/              # Smart contract source files
-│   └── WeightTrend.sol    # FHE weight tracking contract
+�?  └── WeightTrend.sol    # FHE weight tracking contract
 ├── deploy/                 # Deployment scripts
 ├── tasks/                  # Hardhat custom tasks
 ├── test/                   # Test files and specifications
 ├── frontend/               # Next.js frontend application
-│   ├── abi/                # Generated contract ABIs
-│   ├── app/                # Next.js app router pages
-│   ├── components/         # React components
-│   ├── fhevm/              # FHEVM integration utilities
-│   ├── hooks/              # Custom React hooks
-│   ├── utils/              # Utility functions
-│   └── deployments/        # Contract deployment addresses
+�?  ├── abi/                # Generated contract ABIs
+�?  ├── app/                # Next.js app router pages
+�?  ├── components/         # React components
+�?  ├── fhevm/              # FHEVM integration utilities
+�?  ├── hooks/              # Custom React hooks
+�?  ├── utils/              # Utility functions
+�?  └── deployments/        # Contract deployment addresses
 ├── artifacts/              # Compiled contract artifacts
 ├── types/                  # TypeScript type definitions
 ├── hardhat.config.ts       # Hardhat configuration
@@ -146,7 +146,7 @@ The actual weight values are never revealed on-chain - only the comparison resul
 - **Smart Contract Security**: Follows best practices with proper error handling and gas optimization
 - **Audit Ready**: Code structured for formal security audits and compliance requirements
 
-## 🛠️ Architecture
+## 🛠�?Architecture
 
 The system consists of three main components:
 

@@ -597,14 +597,15 @@ export const useWeightTrend = (parameters: {
           !sameSigner.current(thisEthersSigner);
 
       try {
-        const contract = WeightTrend__factory.connect(
-          weightTrend.address as `0x${string}`,
+        const contract = new ethers.Contract(
+          weightTrend.address as string,
+          weightTrend.abi,
           ethersSigner
         );
 
-        setMessage("Calling getAverageWeight...");
+        setMessage("Checking if weight records exist...");
 
-        const result = await contract.getAverageWeight(days);
+        const result = await contract.hasWeightRecords(days);
 
         if (result && typeof result === 'object' && 'hash' in result && 'wait' in result) {
           const tx = result as ethers.TransactionResponse;
@@ -622,9 +623,9 @@ export const useWeightTrend = (parameters: {
             return;
           }
 
-          setMessage("Average weight calculation completed successfully");
+          setMessage("Weight records check completed successfully");
         } else {
-          setMessage("Average weight calculation completed");
+          setMessage("Weight records check completed");
         }
 
       } catch (e) {
@@ -633,8 +634,8 @@ export const useWeightTrend = (parameters: {
           : typeof e === 'object' && e !== null && ('hash' in e || 'blockNumber' in e)
           ? "Transaction processing failed, please try again"
           : String(e);
-        setMessage(`Average calculation failed! error=${errorMessage}`);
-        console.error("calculateAverageWeight error:", e);
+        setMessage(`Check failed! error=${errorMessage}`);
+        console.error("hasWeightRecords error:", e);
       } finally {
         setIsCalculatingAverage(false);
       }

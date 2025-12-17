@@ -10,7 +10,7 @@ import "@rainbow-me/rainbowkit/styles.css";
 import { sepolia, hardhat } from "wagmi/chains";
 import { http } from "wagmi";
 import { InMemoryStorageProvider } from "@/hooks/useInMemoryStorage";
-import { isNonCriticalError, getFriendlyErrorMessage } from "@/utils/errorHandler";
+import { isNonCriticalError } from "@/utils/errorHandler";
 
 const config = getDefaultConfig({
   appName: "Weight Trend",
